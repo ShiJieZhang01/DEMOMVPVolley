@@ -109,8 +109,8 @@ public class HomePresenter implements HomeContact.Presenter {
     }
 
     @Override
-    public void getBussinessfromvolloy() {
-        HttpUtil.getFoods("北京", null, new com.android.volley.Response.Listener<String>() {
+    public void getBussinessfromvolloy(int i) {
+        HttpUtil.getFoods("北京", i,null,new com.android.volley.Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
                 BusinessBean businessBean = new Gson().fromJson(s,BusinessBean.class);

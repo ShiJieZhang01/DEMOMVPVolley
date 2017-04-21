@@ -37,9 +37,8 @@ public class MainActivity extends AppCompatActivity implements HomeContact.MvpVi
     LinearLayoutManager mLinearLayoutManager;
     int currentIndex;
     boolean loading;
-    private static final String TAG ="zsj";
-
-
+    private static final String TAG = "zsj";
+    private int countPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,17 +46,17 @@ public class MainActivity extends AppCompatActivity implements HomeContact.MvpVi
         mBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
         presenter = new HomePresenter(this);
         bussinessAdapter = new BussinessAdapter(this);
+        initListener();
         initUI();
-//        initListener();
     }
     public void initUI(){
-        mLinearLayoutManager = new WrapContentLinearLayoutManager(getContext());
+        mLinearLayoutManager = new LinearLayoutManager(this);
         mBinding.recycleTopnews.setLayoutManager(mLinearLayoutManager);
-        mBinding.recycleTopnews.setHasFixedSize(true);
+        mBinding.recycleTopnews.setHasFixedSize(false);
         mBinding.recycleTopnews.setItemAnimator(new DefaultItemAnimator());
         mBinding.recycleTopnews.setAdapter(bussinessAdapter);
         //滑动监听
-//        mBinding.recycleTopnews.addOnScrollListener(loadingMoreListener);
+        mBinding.recycleTopnews.addOnScrollListener(loadingMoreListener);
         loadDate();
     }
 
@@ -65,8 +64,44 @@ public class MainActivity extends AppCompatActivity implements HomeContact.MvpVi
         if (bussinessAdapter.getItemCount() > 0) {
             bussinessAdapter.clearData();
         }
-        currentIndex = 0;
-        presenter.getBussinessfromvolloy();
+        countPage = 1;
+        presenter.getBussinessfromvolloy(countPage);
+    }
+
+    public void initListener(){
+        loadingMoreListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                Log.d(TAG, "onScrollStateChanged: "+newState);
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy > 0) //向下滚动
+                {
+                    int visibleItemCount = mLinearLayoutManager.getChildCount();
+                    int totalItemCount = mLinearLayoutManager.getItemCount();
+                    int pastVisiblesItems = mLinearLayoutManager.findFirstVisibleItemPosition();
+                    //滑到底部，加载更多内容
+                    if (!loading && (visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+                        loadMoreDate();
+                    }
+                }
+            }
+        };
+    }
+
+    //加载更多内容，每次加载20条新闻
+    private void loadMoreDate() {
+//        bussinessAdapter.loadingStart();
+//        currentIndex += 20;
+//        mTopNewsPrensenter.getNewsList(currentIndex);
+        //TODO
+        countPage +=1;
+        presenter.getBussinessfromvolloy(countPage);
     }
 
     @Override
@@ -83,6 +118,5 @@ public class MainActivity extends AppCompatActivity implements HomeContact.MvpVi
     public void updateBussiness(List<BusinessBean.Business> businesseslist) {
         Log.d(TAG, "updateBussiness: "+businesseslist.size());
         bussinessAdapter.addItems(businesseslist);
-        bussinessAdapter.loadingStart();
     }
 }

@@ -75,11 +75,13 @@ public class HttpUtil {
             throw new RuntimeException("httputil exception");
         }
     }
-    public static void getFoods(String city,String region,Response.Listener<String> listener){
+    public static void getFoods(String city,int page,String region,Response.Listener<String> listener){
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("city", city);
         params.put("category", "美食");
+        params.put("limit","40");
+        params.put("page",String.valueOf(page));
         if(!TextUtils.isEmpty(region)){
             params.put("region", region);
         }

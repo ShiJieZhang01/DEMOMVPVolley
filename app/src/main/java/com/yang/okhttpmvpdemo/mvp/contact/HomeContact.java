@@ -15,7 +15,7 @@ public interface HomeContact {
         void showname();
         void okhttpget();
         void okhttpPost();
-        void getBussinessfromvolloy();
+        void getBussinessfromvolloy(int i);
     }
     interface MvpView extends BaseMvpView<Presenter>{
         void updateBussiness(List<BusinessBean.Business> businesseslist);
